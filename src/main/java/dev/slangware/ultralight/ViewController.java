@@ -196,16 +196,25 @@ public class ViewController {
      * Creates a GL texture.
      */
     private void createGLTexture() {
+        // Enable 2D texture mode
         GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+        // Generate a new texture
         this.glTexture = GL11.glGenTextures();
+
+        // Bind the texture to the current context
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.glTexture);
 
+        // Set texture parameters
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
 
+        // Unbind the texture
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+        // Disable 2D texture mode
         GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 
@@ -218,9 +227,11 @@ public class ViewController {
      * @param buttonDown  indicates whether the button was down or up
      */
     public void onMouseClick(int x, int y, int mouseButton, boolean buttonDown) {
+        // Initialize variables
         UltralightMouseEventBuilder builder;
         UlMouseButton button;
 
+        // Map mouseButton value to UlMouseButton enum
         switch (mouseButton) {
             case 0:
                 button = UlMouseButton.LEFT;
@@ -236,16 +247,18 @@ public class ViewController {
                 break;
         }
 
-
+        // Determine mouse event type based on buttonDown value
         if (buttonDown) {
             builder = UltralightMouseEventBuilder.down(button);
         } else {
             builder = UltralightMouseEventBuilder.up(button);
         }
 
+        // Get the scale factor for the current resolution
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         int scaleFactor = scaledResolution.getScaleFactor();
 
+        // Fire the mouse event with scaled coordinates
         view.fireMouseEvent(builder
                 .x(x * scaleFactor)
                 .y(y * scaleFactor)
@@ -259,14 +272,20 @@ public class ViewController {
      * @param y the y coordinate of the mouse pointer
      */
     public void onMouseMove(int x, int y) {
+        // Get the scaled resolution of the Minecraft window
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+        // Get the scale factor of the Minecraft window
         int scaleFactor = scaledResolution.getScaleFactor();
 
-        view.fireMouseEvent(UltralightMouseEventBuilder.moved()
+        // Create a mouse moved event with the scaled coordinates
+        UlMouseEvent event = UltralightMouseEventBuilder.moved()
                 .x(x * scaleFactor)
                 .y(y * scaleFactor)
                 .button(UlMouseButton.NONE)
-                .build());
+                .build();
+
+        // Fire the mouse event to the view
+        view.fireMouseEvent(event);
     }
 
     /**
@@ -275,17 +294,22 @@ public class ViewController {
      * @param w the amount of scrolling to be done
      */
     public void onScrollMouse(int w) {
+        // Check if the left control key is pressed
         if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+            // Calculate the new device scale
             double newDeviceScale = Math.min(Math.max(scale + (double) w / 715, 1), 10);
+            // Set the new device scale
             this.setDeviceScale(newDeviceScale);
             return;
         }
 
+        // Create a scroll event with the specified deltaY
         UlScrollEvent scrollEvent = new UltralightScrollEventBuilder(UlScrollEventType.BY_PIXEL)
                 .deltaY(w)
                 .deltaY(w)
                 .build();
 
+        // Fire the scroll event
         this.view.fireScrollEvent(scrollEvent);
     }
 
@@ -299,15 +323,8 @@ public class ViewController {
     public void onKeyDown(char c, int key) {
         UltralightKeyEventBuilder builder;
 
-        if (Character.isLetterOrDigit(c) || c == '-' || c == '*' || c == '`' || c == '/' || c == '+' ||
-                c == ' ' || c == '!' || c == '@' || c == '#' || c == '$' || c == '%' || c == '^' ||
-                c == '&' || c == ')' || c == '(' || c == '_' || c == '=' || c == '{' || c == '}' ||
-                c == '[' || c == ']' || c == ':' || c == ';' || c == '\'' || c == '"' || c == '\\' ||
-                c == '|' || c == '<' || c == '>' || c == '?' || c == '؟' || (c >= 'À' && c <= 'ÿ') ||
-                c == '»' || c == '«' || c == 'ـ' || c == '~' || c == 'ً' || c == 'ٌ' || c == 'ٍ' ||
-                c == '،' || c == '؛' || c == ',' || c == 'ّ' || c == 'ۀ' || c == 'آ' || c == 'َ' ||
-                c == 'ُ' || c == 'ِ' || c == 'ة' || c == 'ي' || c == 'ژ' || c == 'إ' || c == 'أ' ||
-                c == 'ء' || c == 'ؤ') {
+        // Check if the character is a letter, digit, or special character
+        if (Character.isLetterOrDigit(c) || isSpecialCharacter(c)) {
             String text = new String(Character.toChars(c));
             builder = UltralightKeyEventBuilder.character()
                     .unmodifiedText(text)
@@ -318,12 +335,14 @@ public class ViewController {
             builder = UltralightKeyEventBuilder.up();
         }
 
+        // Set the properties of the key event builder
         builder.nativeKeyCode(c)
                 .autoRepeat(Keyboard.isRepeatEvent())
                 .virtualKeyCode(UltralightKeyMapper.lwjglKeyToUltralight(key))
                 .keyIdentifier(UlKeyEvent.keyIdentifierFromVirtualKeyCode(builder.virtualKeyCode))
                 .modifiers(UltralightKeyMapper.lwjglModifiersToUltralight());
 
+        // Fire the key event
         this.view.fireKeyEvent(builder.build());
 
         // Manually synthesize enter and tab
@@ -338,6 +357,24 @@ public class ViewController {
             UltraManager.getLogger().info("Reloading page");
             view.reload();
         }
+    }
+
+    /**
+     * Checks if the character is a special character.
+     *
+     * @param c the character to check
+     * @return true if the character is a special character, false otherwise
+     */
+    private boolean isSpecialCharacter(char c) {
+        return c == '-' || c == '*' || c == '`' || c == '/' || c == '+' ||
+                c == ' ' || c == '!' || c == '@' || c == '#' || c == '$' || c == '%' || c == '^' ||
+                c == '&' || c == ')' || c == '(' || c == '_' || c == '=' || c == '{' || c == '}' ||
+                c == '[' || c == ']' || c == ':' || c == ';' || c == '\'' || c == '"' || c == '\\' ||
+                c == '|' || c == '<' || c == '>' || c == '?' || c == '؟' || (c >= 'À' && c <= 'ÿ') ||
+                c == '»' || c == '«' || c == 'ـ' || c == '~' || c == 'ً' || c == 'ٌ' || c == 'ٍ' ||
+                c == '،' || c == '؛' || c == ',' || c == 'ّ' || c == 'ۀ' || c == 'آ' || c == 'َ' ||
+                c == 'ُ' || c == 'ِ' || c == 'ة' || c == 'ي' || c == 'ژ' || c == 'إ' || c == 'أ' ||
+                c == 'ء' || c == 'ؤ';
     }
 
     /**

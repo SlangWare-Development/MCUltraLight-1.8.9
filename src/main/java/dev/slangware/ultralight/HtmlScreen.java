@@ -117,31 +117,40 @@ public abstract class HtmlScreen extends GuiScreen {
      */
     @Override
     public void drawScreen(int x, int y, float p) {
-        if (!initialized) return;
+        // Check if the screen is initialized
+        if (!initialized) {
+            return;
+        }
 
+        // Update the view controller
         viewController.update();
 
+        // Check if the screen is ready
         if (!ready) {
+            // Draw the default background
             this.drawDefaultBackground();
             return;
         }
 
+        // Render the view controller
         viewController.render();
 
+        // Check if a parent screen exists
         if (parentScreen != null) {
+            // Draw the parent screen
             parentScreen.drawScreen(x, y, p);
         }
     }
 
 
     /**
-     * A description of the entire Java function.
+     * Called when the Minecraft window is resized.
+     * Resizes the view controller if the new width or height is different from the current width or height.
      *
-     * @param mc the Minecraft instance
-     * @param w  the new width
-     * @param h  the new height
+     * @param mc The Minecraft instance.
+     * @param w  The new width of the Minecraft window.
+     * @param h  The new height of the Minecraft window.
      */
-
     @Override
     public void onResize(Minecraft mc, int w, int h) {
         int currentWidth = (int) viewController.getView().width();
@@ -255,7 +264,6 @@ public abstract class HtmlScreen extends GuiScreen {
 
         UltraManager.getLogger().info(this.getClass().getSimpleName() + " Unloaded");
 
-//        viewController.unfocus();
         viewController.destroy();
         UltraManager.removeScreen(this);
     }
