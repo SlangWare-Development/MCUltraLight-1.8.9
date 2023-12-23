@@ -1,0 +1,74 @@
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "https://maven.minecraftforge.net/"
+        }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.1.3"
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+
+
+group = 'dev.slangware'
+version = '1.0-SNAPSHOT'
+
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run"
+    mappings = "stable_22"
+    makeObfSourceJar = false
+}
+
+configurations {
+    include
+    implementation.extendsFrom(include)
+}
+
+
+compileJava{
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    options.encoding = 'UTF-8'
+}
+
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io/' }  // GTA SA Jetpack Code:: R O C K E T M A N
+    maven { url 'https://oss.sonatype.org/content/groups/public/' }
+    maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://libraries.minecraft.net/' }
+    maven { url 'https://litarvan.github.io/maven' }
+}
+
+dependencies {
+    // Logging
+    compileOnly 'org.apache.logging.log4j:log4j-core:2.0-beta9'
+    compileOnly 'org.apache.logging.log4j:log4j-api:2.0-beta9'
+    compileOnly 'commons-logging:commons-logging:1.2'
+
+    // LWJGL
+    compileOnly 'org.lwjgl.lwjgl:lwjgl:2.9.3'
+    compileOnly 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
+
+    // Ultralight Java
+    compileOnly "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
+    compileOnly "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT"
+    runtimeOnly "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:win-x64"
+    runtimeOnly "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:linux-x64"
+    runtimeOnly "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:mac-x64"
+
+    // WebServer
+    compileOnly 'com.sparkjava:spark-core:2.9.4'
+    compileOnly 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
+    compileOnly 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
+    compileOnly 'com.sparkjava:spark-template-thymeleaf:2.7.1'
+}
+
