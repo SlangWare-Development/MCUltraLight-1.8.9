@@ -40,6 +40,10 @@ public abstract class HtmlScreen extends GuiScreen {
     private boolean initialized;
     private GuiScreen parentScreen;
 
+    public HtmlScreen() {
+
+    }
+
     public HtmlScreen(String url) {
         this.url = url;
     }
