@@ -54,17 +54,13 @@ dependencies {
     compileOnly 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
 
     // Ultralight Java
-    implementation "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
-    implementation "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT"
-    implementation "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:win-x64"
-    implementation "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:linux-x64"
-    implementation "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:mac-x64"
+    compileOnly "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
 
     // WebServer
-    implementation 'com.sparkjava:spark-core:2.9.4'
-    implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
-    implementation 'com.sparkjava:spark-template-thymeleaf:2.7.1'
+    compileOnly 'com.sparkjava:spark-core:2.9.4'
+    compileOnly 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
+    compileOnly 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
+    compileOnly 'com.sparkjava:spark-template-thymeleaf:2.7.1'
 }
 
 
