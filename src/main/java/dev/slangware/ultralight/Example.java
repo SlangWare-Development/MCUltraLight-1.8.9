@@ -15,7 +15,9 @@ import org.lwjgl.input.Keyboard;
         version = "1.0.0-SNAPSHOT",
         clientSideOnly = true
 )
-public class Example  {
+public class Example {
+    private ViewController viewController;
+
     /**
      * Initializes the mod.
      *
@@ -27,6 +29,7 @@ public class Example  {
         MinecraftForge.EVENT_BUS.register(this);
         // Initialize the UltraManager instance
         UltraManager.getInstance().init();
+        viewController = UltraManager.getInstance().getViewController();
     }
 
     /**
@@ -41,6 +44,6 @@ public class Example  {
         }
 
         // Get the Minecraft instance and display the example screen
-        Minecraft.getMinecraft().displayGuiScreen(ExampleScreen.getInstance());
+        Minecraft.getMinecraft().displayGuiScreen(new ExampleScreen(viewController));
     }
 }

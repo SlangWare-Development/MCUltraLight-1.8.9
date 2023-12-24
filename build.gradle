@@ -58,20 +58,10 @@ repositories {
 }
 
 dependencies {
-    compile  'dev.slangware:MCUltraLight-1.8.9:1.1-SNAPSHOT'
+    compile  'dev.slangware:MCUltraLight-1.8.9:1.1.1-SNAPSHOT'
 
-    // Ultralight Java
-    compile "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
     compile "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT"
     runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:win-x64"
-//    runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:linux-x64"
-//    runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:mac-x64"
-
-    // WebServer
-    compile 'com.sparkjava:spark-core:2.9.4'
-    compile 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
-    compile 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
-    compile 'com.sparkjava:spark-template-thymeleaf:2.7.1'
 
     // Annotations
     compileOnly 'org.jetbrains:annotations:13.0'

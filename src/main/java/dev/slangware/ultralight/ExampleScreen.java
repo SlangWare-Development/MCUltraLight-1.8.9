@@ -1,20 +1,18 @@
 package dev.slangware.ultralight;
 
-import lombok.Getter;
+import dev.slangware.ultralight.annotations.HTMLRoute;
 import lombok.SneakyThrows;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import spark.Request;
 import spark.Response;
 import spark.template.thymeleaf.ThymeleafTemplateEngine;
 
-import java.io.IOException;
-import java.util.Map;
-
 public class ExampleScreen extends HtmlScreen{
-    @Getter
-    private static final ExampleScreen instance = new ExampleScreen();
     private final static ThymeleafTemplateEngine templateEngine = new ThymeleafTemplateEngine();
+
+    public ExampleScreen(ViewController viewController) {
+        super(viewController);
+    }
 
     /**
      * Handles the request and returns the rendered HTML page.
