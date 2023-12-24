@@ -27,6 +27,15 @@ public abstract class HtmlScreen extends GuiScreen {
     @ToString.Exclude
     private GuiScreen parentScreen;
 
+
+    public HtmlScreen() {
+        this(UltraManager.getInstance().getViewController(), null, "");
+    }
+
+    public HtmlScreen(ViewController viewController) {
+        this(viewController, null, "");
+    }
+
     public HtmlScreen(ViewController viewController, String url) {
         this(viewController, null, url);
     }
