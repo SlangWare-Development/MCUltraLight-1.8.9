@@ -2,6 +2,7 @@ package dev.slangware.ultralight;
 
 
 import dev.slangware.ultralight.listener.UILoadListener;
+import lombok.Getter;
 import net.janrupf.ujr.api.UltralightRenderer;
 import net.janrupf.ujr.api.UltralightView;
 import net.janrupf.ujr.api.UltralightViewConfigBuilder;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class HtmlScreen extends GuiScreen {
+    @Getter
     private static final ViewController viewController;
 
     static {
