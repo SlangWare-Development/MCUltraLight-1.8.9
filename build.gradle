@@ -15,9 +15,15 @@ apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "maven-publish"
 
 
-group = 'dev.slangware'
+group = 'dev.slangware.example'
 version = '1.1-SNAPSHOT'
 
+configurations.configureEach {
+    resolutionStrategy {
+        cacheChangingModulesFor 0, 'seconds'
+        cacheDynamicVersionsFor 0, 'seconds'
+    }
+}
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
@@ -40,49 +46,36 @@ repositories {
     maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://libraries.minecraft.net/' }
     maven { url 'https://litarvan.github.io/maven' }
+
+    maven {
+        name = "SlangWare-Development"
+        url = uri("https://maven.pkg.github.com/SlangWare-Development/MCUltraLight-1.8.9")
+        credentials {
+            username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
-    // Logging
-    compileOnly 'org.apache.logging.log4j:log4j-core:2.0-beta9'
-    compileOnly 'org.apache.logging.log4j:log4j-api:2.0-beta9'
-    compileOnly 'commons-logging:commons-logging:1.2'
-
-    // LWJGL
-    compileOnly 'org.lwjgl.lwjgl:lwjgl:2.9.3'
-    compileOnly 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
+    compile  'dev.slangware:MCUltraLight-1.8.9:1.1-SNAPSHOT'
 
     // Ultralight Java
-    compileOnly "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
+    compile "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
+    compile "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT"
+    runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:win-x64"
+//    runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:linux-x64"
+//    runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:mac-x64"
 
     // WebServer
-    compileOnly 'com.sparkjava:spark-core:2.9.4'
-    compileOnly 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
-    compileOnly 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
-    compileOnly 'com.sparkjava:spark-template-thymeleaf:2.7.1'
+    compile 'com.sparkjava:spark-core:2.9.4'
+    compile 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
+    compile 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
+    compile 'com.sparkjava:spark-template-thymeleaf:2.7.1'
 
     // Annotations
     compileOnly 'org.jetbrains:annotations:13.0'
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.jetbrains:annotations:13.0'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
-}
-
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/SlangWare-Development/MCUltraLight-1.8.9")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
-    }
 }
