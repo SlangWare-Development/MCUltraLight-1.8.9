@@ -92,7 +92,7 @@ public abstract class HtmlScreen extends GuiScreen {
         initialized = true;
 
         if (viewController.hasFocus()) {
-            viewController.getView().unfocus();
+            viewController.unfocus();
         }
 
         viewController.setLoadListener(new UILoadListener() {
@@ -157,8 +157,8 @@ public abstract class HtmlScreen extends GuiScreen {
      */
     @Override
     public void onResize(Minecraft mc, int w, int h) {
-        int currentWidth = (int) viewController.getView().width();
-        int currentHeight = (int) viewController.getView().height();
+        int currentWidth = (int) viewController.width();
+        int currentHeight = (int) viewController.height();
 
         int newWidth = this.getWidth();
         int newHeight = this.getHeight();
@@ -277,7 +277,7 @@ public abstract class HtmlScreen extends GuiScreen {
      * Reloads the view of the controller.
      */
     public void reload() {
-        viewController.getView().reload();
+        viewController.reload();
     }
 
 

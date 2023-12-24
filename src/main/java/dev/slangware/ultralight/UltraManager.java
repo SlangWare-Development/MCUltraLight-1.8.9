@@ -3,12 +3,14 @@ package dev.slangware.ultralight;
 import dev.slangware.ultralight.bridge.FileSystemBridge;
 import dev.slangware.ultralight.bridge.LoggerBridge;
 import dev.slangware.ultralight.bridge.LwjglClipboardBridge;
+import lombok.Getter;
 import net.janrupf.ujr.api.UltralightConfigBuilder;
 import net.janrupf.ujr.api.UltralightPlatform;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.input.Keyboard;
 import spark.Spark;
 
 import java.io.Closeable;
@@ -21,7 +23,9 @@ import java.util.List;
 
 public class UltraManager implements Closeable {
     private static final List<HtmlScreen> screens = Collections.synchronizedList(new ArrayList<>());
+    @Getter
     private static final UltraManager instance = new UltraManager();
+    @Getter
     private static final Logger logger = LogManager.getLogger("UltraManager");
     public static int SERVER_PORT;
     private UltralightJavaReborn ultralight;
@@ -88,7 +92,7 @@ public class UltraManager implements Closeable {
 
     /**
      * Removes the given HtmlScreen from the synchronized list of screens.
-     * Also unmaps any HTMLRoute paths associated with the HtmlScreen.
+     * Also, unmaps any HTMLRoute paths associated with the HtmlScreen.
      *
      * @param htmlScreen the HtmlScreen to be removed
      */
@@ -113,18 +117,12 @@ public class UltraManager implements Closeable {
 
     }
 
-    public static UltraManager getInstance() {
-        return instance;
-    }
-
-    public static Logger getLogger() {
-        return logger;
-    }
-
     /**
      * Initializes the function by loading the platform environment, activating the Ultralight renderer, setting up the platform configuration, and starting an HTTP server.
      */
     public void init() {
+        Keyboard.enableRepeatEvents(true);
+
         PlatformEnvironment environment = PlatformEnvironment.load();
         logger.info("Platform environment has been loaded!");
 

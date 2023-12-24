@@ -4,7 +4,6 @@ import dev.slangware.ultralight.listener.UILoadListener;
 import dev.slangware.ultralight.util.UltralightKeyMapper;
 import net.janrupf.ujr.api.*;
 import net.janrupf.ujr.api.event.*;
-import net.janrupf.ujr.api.filesystem.UltralightFilesystem;
 import net.janrupf.ujr.api.javascript.JavaScriptException;
 import net.janrupf.ujr.api.math.IntRect;
 import net.janrupf.ujr.api.surface.UltralightSurface;
@@ -24,48 +23,19 @@ import java.nio.ByteBuffer;
 import static org.lwjgl.opengl.GL12.GL_UNSIGNED_INT_8_8_8_8_REV;
 
 
-public class ViewController {
-
-    private final UltralightPlatform platform;
+public class ViewController extends  UltralightView{
     private final UltralightRenderer renderer;
-    private final UltralightView view;
     private int glTexture;
     private double scale;
 
 
     public ViewController(UltralightRenderer renderer, UltralightView view) {
-        this.platform = UltralightPlatform.instance();
+        super(view.getImplementation());
 
         this.renderer = renderer;
-
-        this.view = view;
-
-        this.view.setLoadListener(new UILoadListener());
-
         this.glTexture = -1;
 
-        Keyboard.enableRepeatEvents(true);
-    }
-
-    /**
-     * Retrieves the UltralightView associated with this object.
-     *
-     * @return the UltralightView associated with this object
-     */
-    public UltralightView getView() {
-        return view;
-    }
-
-    /**
-     * Load a URL, the View will navigate to it as a new page.
-     * <p>
-     * You can use File URLs (eg, file:///page.html) but you must define your own FileSystem
-     * implementation. {@link UltralightPlatform#setFilesystem(UltralightFilesystem)}
-     *
-     * @param url the URL to load
-     */
-    public void loadURL(String url) {
-        this.view.loadURL(url);
+        this.setLoadListener(new UILoadListener());
     }
 
 
@@ -74,20 +44,9 @@ public class ViewController {
      */
     public void update() {
         this.renderer.update();
-        if (!view.needsPaint()) return;
+        if (!this.needsPaint()) return;
         this.renderer.render();
     }
-
-    /**
-     * Resizes the view to the specified width and height.
-     *
-     * @param width  the new width of the view
-     * @param height the new height of the view
-     */
-    public void resize(int width, int height) {
-        this.view.resize(width, height);
-    }
-
 
     /**
      * Renders the texture on the screen. some codes from <a href="https://github.com/DaveH355/ultralight-forge-1.8.9">ultralight-forge-1.8.9</a>
@@ -95,10 +54,10 @@ public class ViewController {
     public void render() {
         if (glTexture == -1) createGLTexture();
 
-        UltralightSurface surface = view.surface();
+        UltralightSurface surface = this.surface();
 
-        int width = (int) view.width();
-        int height = (int) view.height();
+        int width = (int) this.width();
+        int height = (int) this.height();
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GlStateManager.bindTexture(glTexture);
@@ -178,18 +137,6 @@ public class ViewController {
 
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glPopAttrib();
-
-        int error = GL11.glGetError();
-
-        if (error != GL11.GL_NO_ERROR) {
-            try {
-                view.evaluateScript("alert(\"" + error + "\")");
-            } catch (JavaScriptException ignored) {
-
-            }
-            UltraManager.getLogger().error(error);
-        }
-
     }
 
     /**
@@ -259,7 +206,7 @@ public class ViewController {
         int scaleFactor = scaledResolution.getScaleFactor();
 
         // Fire the mouse event with scaled coordinates
-        view.fireMouseEvent(builder
+        this.fireMouseEvent(builder
                 .x(x * scaleFactor)
                 .y(y * scaleFactor)
                 .build());
@@ -285,7 +232,7 @@ public class ViewController {
                 .build();
 
         // Fire the mouse event to the view
-        view.fireMouseEvent(event);
+        this.fireMouseEvent(event);
     }
 
     /**
@@ -310,7 +257,7 @@ public class ViewController {
                 .build();
 
         // Fire the scroll event
-        this.view.fireScrollEvent(scrollEvent);
+        this.fireScrollEvent(scrollEvent);
     }
 
 
@@ -343,11 +290,11 @@ public class ViewController {
                 .modifiers(UltralightKeyMapper.lwjglModifiersToUltralight());
 
         // Fire the key event
-        this.view.fireKeyEvent(builder.build());
+        this.fireKeyEvent(builder.build());
 
         // Manually synthesize enter and tab
         if (builder.type == UlKeyEventType.DOWN && (key == Keyboard.KEY_RETURN || key == Keyboard.KEY_TAB)) {
-            this.view.fireKeyEvent(UltralightKeyEventBuilder.character()
+            this.fireKeyEvent(UltralightKeyEventBuilder.character()
                     .unmodifiedText(key == Keyboard.KEY_RETURN ? "\n" : "\t")
                     .text(key == Keyboard.KEY_RETURN ? "\n" : "\t"));
         }
@@ -355,7 +302,7 @@ public class ViewController {
         // Manually synthesize reload
         if (builder.type == UlKeyEventType.DOWN && (key == Keyboard.KEY_R && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && !Keyboard.isRepeatEvent()) {
             UltraManager.getLogger().info("Reloading page");
-            view.reload();
+            this.reload();
         }
     }
 
@@ -378,64 +325,12 @@ public class ViewController {
     }
 
     /**
-     * Sets the load listener for the UI.
-     *
-     * @param loadListener the load listener to be set
-     */
-    public void setLoadListener(UILoadListener loadListener) {
-        this.view.setLoadListener(loadListener);
-    }
-
-    /**
-     * Reloads the view.
-     */
-    public void reload() {
-        this.view.reload();
-    }
-
-    /**
-     * Focuses on the view.
-     */
-    public void focus() {
-        this.view.focus();
-    }
-
-    /**
-     * Determines if the function has focus.
-     *
-     * @return true if the function has focus, false otherwise
-     */
-    public boolean hasFocus() {
-        return this.view.hasFocus();
-    }
-
-    /**
      * Destroys the object by stopping the view and unfocusing it.
      */
 
     public void destroy() {
-        this.getView().stop();
-        this.getView().unfocus();
-    }
-
-    /**
-     * Evaluates a JavaScript script.
-     *
-     * @param s the JavaScript script to evaluate
-     * @return the result of the evaluation
-     * @throws JavaScriptException if an error occurs during script evaluation
-     */
-    public String evaluateScript(String s) throws JavaScriptException {
-        return this.view.evaluateScript(s);
-    }
-
-    /**
-     * Loads the specified HTML string into the view.
-     *
-     * @param s the HTML string to be loaded
-     */
-    public void loadHTML(String s) {
-        this.view.loadHTML(s);
+        this.stop();
+        this.unfocus();
     }
 
     /**
@@ -445,7 +340,7 @@ public class ViewController {
      */
     public void setDeviceScale(double scale) {
         this.scale = scale;
-//        this.view.setDeviceScale(scale);
+//        this.setDeviceScale(scale);
         try {
             String transformOrigin = "left top";
             String transform = "scale(" + this.scale + ")";
@@ -457,19 +352,5 @@ public class ViewController {
         }
     }
 
-    /**
-     * Unfocuses the view.
-     */
-    public void unfocus() {
-        this.view.unfocus();
-    }
 
-    /**
-     * Retrieves the Ultralight platform.
-     *
-     * @return the Ultralight platform
-     */
-    public UltralightPlatform getPlatform() {
-        return platform;
-    }
 }
