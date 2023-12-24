@@ -16,7 +16,7 @@ apply plugin: "maven-publish"
 
 
 group = 'dev.slangware'
-version = '1.1-SNAPSHOT'
+version = '1.1.1-SNAPSHOT'
 
 
 minecraft {
@@ -44,26 +44,26 @@ repositories {
 
 dependencies {
     // Logging
-    compileOnly 'org.apache.logging.log4j:log4j-core:2.0-beta9'
-    compileOnly 'org.apache.logging.log4j:log4j-api:2.0-beta9'
-    compileOnly 'commons-logging:commons-logging:1.2'
+    compile 'org.apache.logging.log4j:log4j-core:2.0-beta9'
+    compile 'org.apache.logging.log4j:log4j-api:2.0-beta9'
+    compile 'commons-logging:commons-logging:1.2'
 
     // LWJGL
-    compileOnly 'org.lwjgl.lwjgl:lwjgl:2.9.3'
-    compileOnly 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
+    compile 'org.lwjgl.lwjgl:lwjgl:2.9.3'
+    compile 'org.lwjgl.lwjgl:lwjgl_util:2.9.3'
 
     // Ultralight Java
-    compileOnly "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
+    compile "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
 
     // WebServer
-    compileOnly 'com.sparkjava:spark-core:2.9.4'
-    compileOnly 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
-    compileOnly 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
-    compileOnly 'com.sparkjava:spark-template-thymeleaf:2.7.1'
+    compile 'com.sparkjava:spark-core:2.9.4'
+    compile 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
+    compile 'org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE'
+    compile 'com.sparkjava:spark-template-thymeleaf:2.7.1'
 
     // Annotations
-    compileOnly 'org.jetbrains:annotations:13.0'
-    compileOnly 'org.projectlombok:lombok:1.18.30'
+    compile 'org.jetbrains:annotations:13.0'
+    compile 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.jetbrains:annotations:13.0'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }

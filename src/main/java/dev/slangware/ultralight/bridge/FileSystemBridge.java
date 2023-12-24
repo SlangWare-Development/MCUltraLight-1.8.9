@@ -33,14 +33,14 @@ public class FileSystemBridge implements UltralightFilesystem {
         if (path.startsWith(RESOURCE_PREFIX)) {
             // Built in resource, attempt look up
             String resourcePath = path.substring(RESOURCE_PREFIX.length());
-            URI resource = UltralightResources.getResource(resourcePath);
+            boolean resourceExists = UltralightResources.getResource(resourcePath) != null;
 
             // If the resource does not exist, log a warning
-            if (resource == null) {
+            if (!resourceExists) {
                 UltraManager.getLogger().warn("Resource {} does not exist", resourcePath);
             }
 
-            return resource != null;
+            return resourceExists;
         }
 
         return false;
@@ -109,8 +109,7 @@ public class FileSystemBridge implements UltralightFilesystem {
                 // We also allocate a direct byte buffer, which will avoid copies later
                 ByteBuffer buffer = ByteBuffer.allocateDirect(length);
                 try (ReadableByteChannel channel = Channels.newChannel(connection.getInputStream())) {
-                    //noinspection StatementWithEmptyBody
-                    while (channel.read(buffer) > 0) { /* keep going */ }
+                    channel.read(buffer);
                 }
 
                 // We are done, the resource is in memory
@@ -118,20 +117,20 @@ public class FileSystemBridge implements UltralightFilesystem {
             }
 
             // Size is not known, so we will have to take the slower path of a buffer
-            try (ByteArrayOutputStream out = new ByteArrayOutputStream(); InputStream in = connection.getInputStream()) {
-                // Classic copy
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            try (InputStream in = connection.getInputStream()) {
                 byte[] buffer = new byte[1024];
                 int read;
                 while ((read = in.read(buffer)) > 0) {
                     out.write(buffer, 0, read);
                 }
-
-                // Wrap the array in a buffer
-                //
-                // The native code later will have to copy this again as the buffer is not a direct buffer.
-                // However, Ultralight Java Reborn handles this detail internally for you.
-                return new NioUltralightBuffer(ByteBuffer.wrap(out.toByteArray()));
             }
+
+            // Wrap the array in a buffer
+            //
+            // The native code later will have to copy this again as the buffer is not a direct buffer.
+            // However, Ultralight Java Reborn handles this detail internally for you.
+            return new NioUltralightBuffer(ByteBuffer.wrap(out.toByteArray()));
         }
 
         // Opening failed.

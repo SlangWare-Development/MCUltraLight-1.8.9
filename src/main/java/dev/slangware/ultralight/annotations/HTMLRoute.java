@@ -1,4 +1,4 @@
-package dev.slangware.ultralight;
+package dev.slangware.ultralight.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

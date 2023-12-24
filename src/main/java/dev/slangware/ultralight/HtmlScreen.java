@@ -2,14 +2,12 @@ package dev.slangware.ultralight;
 
 
 import dev.slangware.ultralight.listener.UILoadListener;
-import lombok.Getter;
-import net.janrupf.ujr.api.UltralightRenderer;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import net.janrupf.ujr.api.UltralightView;
-import net.janrupf.ujr.api.UltralightViewConfigBuilder;
-import net.janrupf.ujr.api.config.UlViewConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -18,44 +16,28 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@EqualsAndHashCode(callSuper = false)
+@Data
 public abstract class HtmlScreen extends GuiScreen {
-    @Getter
-    private static final ViewController viewController;
-
-    static {
-        UlViewConfig config = new UltralightViewConfigBuilder()
-                .transparent(true)
-                .enableImages(true)
-                .enableJavascript(true)
-                .build();
-
-        UltralightRenderer renderer = UltralightRenderer.getOrCreate();
-
-        ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
-
-        UltralightView view = renderer.createView(resolution.getScaledWidth(), resolution.getScaledHeight(), config);
-        viewController = new ViewController(renderer, view);
-    }
-
-    private String url = "";
+    @ToString.Exclude
+    private final ViewController viewController;
+    private String url;
     private boolean ready;
     private boolean initialized;
+    @ToString.Exclude
     private GuiScreen parentScreen;
 
-    public HtmlScreen() {
-
+    public HtmlScreen(ViewController viewController, String url) {
+        this(viewController, null, url);
     }
 
-    public HtmlScreen(String url) {
-        this.url = url;
+    public HtmlScreen(ViewController viewController, GuiScreen parentScreen) {
+        this(viewController, parentScreen, "");
     }
 
-    public HtmlScreen(GuiScreen parentScreen) {
+    public HtmlScreen(ViewController viewController, GuiScreen parentScreen, String url) {
         this.parentScreen = parentScreen;
-    }
-
-    public HtmlScreen(GuiScreen parentScreen, String url) {
-        this.parentScreen = parentScreen;
+        this.viewController = viewController;
         this.url = url;
     }
 
@@ -67,8 +49,8 @@ public abstract class HtmlScreen extends GuiScreen {
     public static ModelBuilder modelBuilder() {
         Minecraft minecraft = Minecraft.getMinecraft();
         return ModelBuilder.builder()
-                .append("USERNAME", minecraft.thePlayer != null ? minecraft.thePlayer.getName() : minecraft.getSession().getUsername())
-                .append("USER_UUID", minecraft.thePlayer != null ? minecraft.thePlayer.getName() : minecraft.getSession().getPlayerID());
+                .append("USERNAME", minecraft.thePlayer != null && !minecraft.thePlayer.getName().isEmpty() ? minecraft.thePlayer.getName() : minecraft.getSession().getUsername())
+                .append("USER_UUID", minecraft.thePlayer != null && minecraft.thePlayer.getUniqueID() != null ? minecraft.thePlayer.getUniqueID().toString() : minecraft.getSession().getPlayerID());
     }
 
 
@@ -79,9 +61,9 @@ public abstract class HtmlScreen extends GuiScreen {
         this.ready = true;
 
         viewController.resize(this.getWidth(), this.getHeight());
-        UltraManager.getLogger().info(this.getClass().getSimpleName() + " Loaded");
-
         viewController.focus();
+
+        UltraManager.getLogger().debug("Loaded " + this.getClass().getSimpleName());
     }
 
     /**
@@ -107,12 +89,12 @@ public abstract class HtmlScreen extends GuiScreen {
         if (url.startsWith("http")) {
             viewController.loadURL(url);
         } else {
-            viewController.loadURL("http://127.0.0.1:" + UltraManager.SERVER_PORT + "/" + url);
+            viewController.loadURL(String.format("http://127.0.0.1:%d/%s", UltraManager.getInstance().SERVER_PORT, url));
         }
 
-        UltraManager.addScreen(this);
-    }
+        UltraManager.getInstance().addScreen(this);
 
+    }
 
     /**
      * Draws the screen at the specified coordinates.
@@ -147,7 +129,6 @@ public abstract class HtmlScreen extends GuiScreen {
             parentScreen.drawScreen(x, y, p);
         }
     }
-
 
     /**
      * Called when the Minecraft window is resized.
@@ -229,6 +210,12 @@ public abstract class HtmlScreen extends GuiScreen {
     }
 
 
+    public void close() {
+        if (mc.currentScreen != this) return;
+        mc.displayGuiScreen(null);
+    }
+
+
     /**
      * This method called when user release click at window
      *
@@ -240,7 +227,6 @@ public abstract class HtmlScreen extends GuiScreen {
     public void mouseReleased(int x, int y, int mouseButton) {
         viewController.onMouseClick(x, y, mouseButton, false);
     }
-
 
     /**
      * Handles the keyboard input by retrieving the event key and character from the Keyboard class.
@@ -268,20 +254,20 @@ public abstract class HtmlScreen extends GuiScreen {
         this.ready = false;
         this.initialized = false;
 
-        UltraManager.getLogger().info(this.getClass().getSimpleName() + " Unloaded");
-
         viewController.destroy();
-        UltraManager.removeScreen(this);
-    }
 
+        UltraManager.getLogger().debug("Unloaded " + this.getClass().getSimpleName());
+
+        UltraManager.getInstance().removeScreen(this);
+    }
 
     /**
      * Reloads the view of the controller.
      */
     public void reload() {
+        UltraManager.getLogger().debug("Reloading " + this.getClass().getSimpleName());
         viewController.reload();
     }
-
 
     public static class ModelBuilder {
         private final Map<String, String> map = new HashMap<>();
@@ -317,5 +303,4 @@ public abstract class HtmlScreen extends GuiScreen {
             return map;
         }
     }
-
 }

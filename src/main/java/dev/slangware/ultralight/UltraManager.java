@@ -1,13 +1,17 @@
 package dev.slangware.ultralight;
 
+import dev.slangware.ultralight.annotations.HTMLRoute;
 import dev.slangware.ultralight.bridge.FileSystemBridge;
 import dev.slangware.ultralight.bridge.LoggerBridge;
 import dev.slangware.ultralight.bridge.LwjglClipboardBridge;
 import lombok.Getter;
-import net.janrupf.ujr.api.UltralightConfigBuilder;
-import net.janrupf.ujr.api.UltralightPlatform;
+import lombok.Synchronized;
+import net.janrupf.ujr.api.*;
+import net.janrupf.ujr.api.config.UlViewConfig;
 import net.janrupf.ujr.core.UltralightJavaReborn;
 import net.janrupf.ujr.core.platform.PlatformEnvironment;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
@@ -21,26 +25,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
 public class UltraManager implements Closeable {
-    private static final List<HtmlScreen> screens = Collections.synchronizedList(new ArrayList<>());
     @Getter
     private static final UltraManager instance = new UltraManager();
+    private final List<HtmlScreen> screens = Collections.synchronizedList(new ArrayList<>());
     @Getter
     private static final Logger logger = LogManager.getLogger("UltraManager");
-    public static int SERVER_PORT;
+    public int SERVER_PORT;
     private UltralightJavaReborn ultralight;
-
+    private ViewController viewController;
 
     /**
      * Adds a new HtmlScreen to the screens list and registers its annotated routes with Spark.
      *
      * @param screen the HtmlScreen to be added
      */
-    public static void addScreen(HtmlScreen screen) {
-        synchronized (screens) {
-            if (screens.contains(screen)) return;
-            screens.add(screen);
-        }
+    @Synchronized("screens")
+    public void addScreen(HtmlScreen screen) {
+        if (screens.contains(screen)) return;
+        screens.add(screen);
 
         for (Method m : screen.getClass().getDeclaredMethods()) {
             if (!m.isAnnotationPresent(HTMLRoute.class)) continue;
@@ -49,7 +53,7 @@ public class UltraManager implements Closeable {
 
             HTMLRoute annotation = m.getAnnotation(HTMLRoute.class);
 
-            logger.info("Adding route: " + annotation.path() + " " + annotation.method());
+            logger.debug("Adding route: " + annotation.path() + " " + annotation.method());
 
             try {
                 switch (annotation.method()) {
@@ -96,10 +100,9 @@ public class UltraManager implements Closeable {
      *
      * @param htmlScreen the HtmlScreen to be removed
      */
-    public static void removeScreen(HtmlScreen htmlScreen) {
-        synchronized (screens) {
-            screens.remove(htmlScreen);
-        }
+    @Synchronized("screens")
+    public void removeScreen(HtmlScreen htmlScreen) {
+        screens.remove(htmlScreen);
 
         for (Method m : htmlScreen.getClass().getDeclaredMethods()) {
             if (!m.isAnnotationPresent(HTMLRoute.class)) continue;
@@ -117,10 +120,18 @@ public class UltraManager implements Closeable {
 
     }
 
+
+    /**
+     * Initialize the function.
+     */
+    public void init() {
+        this.init("/templates");
+    }
+
     /**
      * Initializes the function by loading the platform environment, activating the Ultralight renderer, setting up the platform configuration, and starting an HTTP server.
      */
-    public void init() {
+    public void init(String templateFiles) {
         Keyboard.enableRepeatEvents(true);
 
         PlatformEnvironment environment = PlatformEnvironment.load();
@@ -145,6 +156,18 @@ public class UltraManager implements Closeable {
                         .resourcePathPrefix(FileSystemBridge.RESOURCE_PREFIX)
                         .build());
 
+        UlViewConfig config = new UltralightViewConfigBuilder()
+                .transparent(true)
+                .enableImages(true)
+                .enableJavascript(true)
+                .build();
+
+        UltralightRenderer renderer = UltralightRenderer.getOrCreate();
+
+        ScaledResolution resolution = new ScaledResolution(Minecraft.getMinecraft());
+
+        UltralightView view = renderer.createView(resolution.getScaledWidth(), resolution.getScaledHeight(), config);
+        viewController = new ViewController(renderer, view);
 
         logger.info("Ultralight Initialized!");
 
@@ -154,7 +177,7 @@ public class UltraManager implements Closeable {
             logger.info("Starting http server port " + SERVER_PORT + "...");
             Spark.port(SERVER_PORT);
             Spark.trustForwardHeaders();
-            Spark.staticFileLocation("/templates");
+            Spark.staticFileLocation(templateFiles);
             Spark.init();
             Spark.awaitInitialization();
             logger.info("HTTP Server started!");

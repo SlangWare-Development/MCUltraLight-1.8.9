@@ -301,7 +301,7 @@ public class ViewController extends  UltralightView{
 
         // Manually synthesize reload
         if (builder.type == UlKeyEventType.DOWN && (key == Keyboard.KEY_R && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) && !Keyboard.isRepeatEvent()) {
-            UltraManager.getLogger().info("Reloading page");
+            UltraManager.getLogger().debug("Reloading page");
             this.reload();
         }
     }
