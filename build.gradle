@@ -46,6 +46,10 @@ dependencies {
     // Ultralight Java
     compile "net.janrupf.ultralight:ultralight-java-reborn-core:0.0.2-SNAPSHOT"
 
+    // Debug
+    compile "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT"
+    runtime "net.janrupf.ultralight:ultralight-java-reborn-platform-jni:0.0.2-SNAPSHOT:win-x64"
+
     // WebServer
     compile 'com.sparkjava:spark-core:2.9.4'
     compile 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'

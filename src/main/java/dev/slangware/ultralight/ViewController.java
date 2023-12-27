@@ -59,7 +59,7 @@ public class ViewController extends  UltralightView{
         int width = (int) this.width();
         int height = (int) this.height();
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+//        GL11.glEnable(GL11.GL_TEXTURE_2D);
         GlStateManager.bindTexture(glTexture);
 
         IntRect dirtyBounds = surface.dirtyBounds();
@@ -135,7 +135,7 @@ public class ViewController extends  UltralightView{
         GL11.glPopMatrix();
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
+//        GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glPopAttrib();
     }
 

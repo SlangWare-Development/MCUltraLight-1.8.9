@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head>
+<body style="text-align: center;background-color: rgba(0,0,0,0.8)">
+<h1 style="font-family: sans-serif" id="hello">Hello World!</h1>
+<h4 style="font-family: sans-serif">It's a test application for <a href="https://github.com/SlangWare-Development/MCUltraLight-1.8.9">MCUltraLight</a></h4>
+
+<form action="/action" method="post" style="display: grid; grid-gap: 1rem;background-color: silver;padding: 10px;text-align: start">
+    <label style="font-family: sans-serif">Username: <span th:text="${username}">--</span></label>
+    <label style="font-family: sans-serif">UUID: <span th:text="${uuid}">--</span></label>
+    <label style="font-family: sans-serif">Version: <span th:text="${version}">--</span></label>
+
+    <label>
+        <span style="margin-right: 6.1rem">Message: </span>
+        <input type="text" name="message">
+    </label>
+    <label>
+        <span style="margin-right: 5rem">Select Type: </span>
+        <select name="type" style="width: 10.4rem">
+            <option>print</option>
+            <option>close</option>
+        </select>
+    </label>
+    <button style="width: 21rem;border: none;background-color: green;padding: 5px;color: white">Submit</button>
+
+</form>
+
+<a href="https://google.com" style="font-family: sans-serif;font-size: large;font-weight: bold;color: deepskyblue">Go Google :)</a>
+<script type="application/javascript">
+    setInterval(() =>{
+        document.getElementById("hello").style.color = "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0");
+    }, 100)
+</script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+[
+  {
+    "modid": "ulexample",
+    "name": "MCUltraLight-1.8.9-example",
+    "version": "1.0.0-SNAPSHOT",
+    "mcversion": "1.8.9",
+    "updateUrl": "",
+    "dependencies": []
+  }
+]
