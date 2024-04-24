@@ -1,7 +1,11 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'https://jitpack.io/' }
+        maven { url 'https://jitpack.io/' }  // GTA SA Jetpack Code:: R O C K E T M A N
+        maven { url 'https://oss.sonatype.org/content/groups/public/' }
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://libraries.minecraft.net/' }
+        maven { url 'https://litarvan.github.io/maven' }
         maven { url "https://maven.minecraftforge.net/" }
     }
     dependencies {
