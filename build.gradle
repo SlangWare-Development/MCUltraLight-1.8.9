@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io/' }
+        maven { url "https://maven.minecraftforge.net/" }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.1.3"
